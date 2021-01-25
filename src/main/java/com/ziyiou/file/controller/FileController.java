@@ -14,11 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -50,41 +51,32 @@ public class FileController {
 //    }
 
     @GetMapping("/download")
-    public String download(String filename,
+    public void download(String filename,
                            String folder,
                            Integer fileId,
                            HttpServletResponse res) throws IOException {
+//        res.getOutputStream().flush();
+//        res.getOutputStream().close();
 
         File dest = new File(fileRoot + '/' + folder + '/' + filename);
-
-        // 附件下载
-        res.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8));
-
-        // 获取目标文件流
-        FileInputStream in = new FileInputStream(dest);
-        ServletOutputStream out = res.getOutputStream();
 
         // 更新数据库
         myFileMapper.update(fileId);
 
-        Integer id = userMapper.getIdByUsername(folder);
+        /*res.setContentType("application/png;charset=UTF-8");*/
+        res.setHeader("Content-Disposition", "attachment;filename="
+                .concat(String.valueOf(URLEncoder.encode(filename, "UTF-8"))));
+        res.setContentType("application/octet-stream");
+        OutputStream out = res.getOutputStream();
+        IOUtils.copy(new FileInputStream(dest),out);
+        out.flush();
+        out.close();
 
-        // 进行下载
-        try {
-            IOUtils.copy(in, out);
-        } catch (IOException e) {
-            System.err.println("下载异常");
-        }
-
-        // 关闭资源
-        IOUtils.closeQuietly(in);
-        IOUtils.closeQuietly(out);
-
-        return "redirect:/files"+id;
     }
 
     @GetMapping("/delete")
-    public String delete(String filename,
+    @ResponseBody
+    public void delete(String filename,
                          String folder,
                          Integer fileId) {
         File dest = new File(fileRoot + File.separator + folder + File.separator + filename);
@@ -94,10 +86,6 @@ public class FileController {
             // 更新数据库
             myFileMapper.delete(fileId);
         }
-
-        Integer userId = userMapper.getIdByUsername(folder);
-
-        return "redirect:/files/" + userId;
     }
 
     /**
@@ -110,7 +98,7 @@ public class FileController {
     @PostMapping("/file")
     @ResponseBody
     public User upload(@RequestParam MultipartFile[] files,
-                         Integer userId) throws IOException {
+                       Integer userId) throws IOException {
         // todo 只有管理员才可以上传文件
 
         // 获取用户pojo

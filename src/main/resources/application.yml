@@ -11,3 +11,6 @@ spring:
 
 server:
   port: 9900
+  servlet:
+    session:
+      timeout: 9999999999999m
