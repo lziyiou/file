@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <p>当前用户：<label th:text="${current.getNickname()}">未登录</label></p>
+    <p th:if="${current}"><a href="/logout">退出</a></p>
+    <table border="1" cellspacing="0" cellpadding="10">
+        <thead>
+        <tr>
+            <!--        <td>序号</td>-->
+            <td>文件名</td>
+            <td>大小</td>
+            <td>下载次数</td>
+            <td>上传日期</td>
+            <td colspan="2">操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="file,fileStat : ${files}">
+            <!--        <th th:text="${fileStat.index+1}">序号</th>-->
+            <td th:text="${file.getName().substring(32)}">文件</td>
+            <td th:text="${file.getSize() div 1048576}+' M'">大小</td>
+            <td th:text="${file.getDownloadTimes()}+' 次'">下载次数</td>
+            <td th:text="${#dates.format(file.getUploadTime(), 'MM-dd HH:mm')}">上传日期</td>
+            <td>
+                <a th:href="@{/download(filename=${file.getName()}, folder=${folder}, fileId=${file.getId()})}">下载</a>
+            </td>
+            <td>删除</td>
+        </tr>
+        </tbody>
+    </table>
+    <!--<video id="example_video_1" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="none" width="640"-->
+    <!--       height="264"-->
+    <!--       poster="http://video-js.zencoder.com/oceans-clip.png"-->
+    <!--       data-setup="{}">-->
+    <!--    <source src="/file/1.mp4" type='video/mp4'/>-->
+    <!--    <track kind="captions" src="demo.captions.vtt" srclang="en" label="English"></track>-->
+    <!--    &lt;!&ndash; Tracks need an ending tag thanks to IE9 &ndash;&gt;-->
+    <!--    <track kind="subtitles" src="demo.captions.vtt" srclang="en" label="English"></track>-->
+    <!--    &lt;!&ndash; Tracks need an ending tag thanks to IE9 &ndash;&gt;-->
+    <!--</video>-->
+
+</div>
+</body>
+<link href="css/video-js.min.css" rel="stylesheet" type="text/css">
+<script src="js/video.min.js"></script>
+<script type="text/javascript">
+    var myPlayer = videojs('example_video_1');
+    videojs("example_video_1").ready(function () {
+        var myPlayer = this;
+        myPlayer.play();
+    });
+</script>
+</html>
