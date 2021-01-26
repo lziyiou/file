@@ -57,11 +57,18 @@
     </div>
     <div class="navbar navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a th:href="@{/home(userId=${current.getId()})}" href="/home" class="navbar-brand d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <a th:href="@{/home(userId=${current.getId()})}" href="/home"
+               class="navbar-brand d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2"
+                     viewBox="0 0 24 24">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                </svg>
                 <strong th:text="${current.getNickname()}">用户名</strong>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader"
+                    aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
@@ -89,21 +96,28 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                 <div class="col" th:id="'fileField'+${fileStat.index}" th:each="file,fileStat : ${files}">
                     <div class="card shadow-sm">
-                        <video th:id="'video_'+${fileStat.count}" class="video-js vjs-default-skin" controls preload="auto"
+                        <video th:id="'video_'+${fileStat.count}" class="video-js vjs-default-skin" controls
+                               preload="auto"
                                style="margin:0 auto;margin-top: 5px">
                             <source th:src="@{'/videos/'+${folder}+'/'+${file.getName()}}" type="video/mp4">
                         </video>
                         <div class="card-body">
-                            <p class="card-text"  th:text="${file.getName().substring(32)}">视频名</p>
+                            <p class="card-text" th:text="${file.getName().substring(32)}">视频名</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" th:onclick="abc([[${file.getName()}]], [[${folder}]], [[${file.getId()}]], [[${fileStat.index}]])">下载</a>
-                                    <a type="button" class="btn btn-sm btn-outline-secondary" th:onclick="dele([[${file.getName()}]], [[${folder}]], [[${file.getId()}]], [[${fileStat.index}]])">删除</a>
+                                    <a type="button" class="btn btn-sm btn-outline-secondary"
+                                       th:onclick="abc([[${file.getName()}]], [[${folder}]], [[${file.getId()}]], [[${fileStat.index}]])">下载</a>
+                                    <a type="button" class="btn btn-sm btn-outline-secondary"
+                                       th:onclick="dele([[${file.getName()}]], [[${folder}]], [[${file.getId()}]], [[${fileStat.index}]])">删除</a>
                                 </div>
                                 <small class="text-muted" th:text="${file.getSize() div 1048576}+' M'">115M</small>
-<!--                                <small class="text-muted" th:text="${file.getDownloadTimes()}+' 次'">2次</small>-->
-                                <small th:id="'downloaded'+${fileStat.index}" class="text-muted" th:text="${file.getDownloadTimes()==0?'未下载':'已下载'}" th:class="${file.getDownloadTimes()==0}?'text-danger':'text-muted'">2次</small>
-                                <small class="text-muted" th:text="${#dates.format(file.getUploadTime(), 'yyyy-MM-dd HH:mm')}">2021-1-12 15:20</small>
+                                <!--                                <small class="text-muted" th:text="${file.getDownloadTimes()}+' 次'">2次</small>-->
+                                <small th:id="'downloaded'+${fileStat.index}" class="text-muted"
+                                       th:text="${file.getDownloadTimes()==0?'未下载':'已下载'}"
+                                       th:class="${file.getDownloadTimes()==0}?'text-danger':'text-muted'">2次</small>
+                                <small class="text-muted"
+                                       th:text="${#dates.format(file.getUploadTime(), 'yyyy-MM-dd HH:mm')}">2021-1-12
+                                    15:20</small>
                             </div>
                         </div>
                     </div>
@@ -128,16 +142,14 @@
 <script src="/js/jquery.js"></script>
 
 <script>
-    function abc(filename, folder, fileId,id) {
-        location.href = "/download?filename="+filename+"&folder="+folder+"&fileId="+fileId;
-        $("#downloaded"+id).text("已下载");
-        $("#downloaded"+id).removeClass("text-danger");
-        $("#downloaded"+id).addClass("text-muted");
+    function abc(filename, folder, fileId, id) {
+        location.href = "/download?filename=" + filename + "&folder=" + folder + "&fileId=" + fileId;
+        $("#downloaded" + id).text("已下载");
+        $("#downloaded" + id).removeClass("text-danger");
+        $("#downloaded" + id).addClass("text-muted");
     }
+
     function dele(filename, folder, fileId, id) {
-        // location.href = "/delete?filename="+filename+"&folder="+folder+"&fileId="+fileId;
-        // alert("删除成功");
-        // $("#fileField"+id).remove();
         $.ajax({
             url: "/delete",
             data: {
@@ -147,7 +159,12 @@
             },
             type: "GET",
             success: function (data) {
-                $("#fileField"+id).remove();
+                console.log(data==="OK");
+                if (data === "OK") {
+                    $("#fileField" + id).remove();
+                } else {
+                    alert("删除失败");
+                }
             }
         })
 

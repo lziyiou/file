@@ -52,9 +52,9 @@ public class FileController {
 
     @GetMapping("/download")
     public void download(String filename,
-                           String folder,
-                           Integer fileId,
-                           HttpServletResponse res) throws IOException {
+                         String folder,
+                         Integer fileId,
+                         HttpServletResponse res) throws IOException {
 //        res.getOutputStream().flush();
 //        res.getOutputStream().close();
 
@@ -68,7 +68,7 @@ public class FileController {
                 .concat(String.valueOf(URLEncoder.encode(filename, "UTF-8"))));
         res.setContentType("application/octet-stream");
         OutputStream out = res.getOutputStream();
-        IOUtils.copy(new FileInputStream(dest),out);
+        IOUtils.copy(new FileInputStream(dest), out);
         out.flush();
         out.close();
 
@@ -76,9 +76,9 @@ public class FileController {
 
     @GetMapping("/delete")
     @ResponseBody
-    public void delete(String filename,
-                         String folder,
-                         Integer fileId) {
+    public String delete(String filename,
+                       String folder,
+                       Integer fileId) {
         File dest = new File(fileRoot + File.separator + folder + File.separator + filename);
 
         boolean isDeleted = dest.delete();
@@ -86,6 +86,7 @@ public class FileController {
             // 更新数据库
             myFileMapper.delete(fileId);
         }
+        return "OK";
     }
 
     /**
@@ -185,7 +186,14 @@ public class FileController {
         Subject subject = SecurityUtils.getSubject();
         if (!subject.hasRole("root")) {
             model.addAttribute("msg", "无权限");
-            return "login";
+
+            Object principal = subject.getPrincipal();
+            if (principal == null) {
+                return "login";
+            }
+
+            Integer id = ((User) principal).getId();
+            return "redirect:/files/" + id;
         }
 
         // 可管理的用户目录，可上传的用户

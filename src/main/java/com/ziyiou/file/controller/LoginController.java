@@ -35,10 +35,15 @@ public class LoginController {
     @PostMapping("/login")
     public String login(String username, String password, Model model) {
         Subject subject = SecurityUtils.getSubject();
+
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 
         try {
+
+            // 记住我
+            token.setRememberMe(true);
             subject.login(token);
+
             if (subject.hasRole("root")) {
                 return "redirect:/";
             } else {
