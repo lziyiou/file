@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+// todo 检查各个功能的权限，防止非法访问（通过URL进行下载删除）
+
 @Controller
 public class FileController {
 
@@ -85,6 +87,8 @@ public class FileController {
         if (isDeleted) {
             // 更新数据库
             myFileMapper.delete(fileId);
+        }else {
+            return "FAIL";
         }
         return "OK";
     }
@@ -155,18 +159,7 @@ public class FileController {
         // 当前用户的所有文件
 //        File[] files = new File(fileRoot + File.separator + user.getUsername()).listFiles();
         List<MyFile> files = myFileMapper.getAllMyFilesByUserId(user.getId());
-        // 文件按上传时间递减排序
-//        if (files != null) {
-//            Arrays.sort(files, (f1, f2) -> {
-//                long diff = f1.lastModified() - f2.lastModified();
-//                if (diff > 0)
-//                    return -1;
-//                else if (diff == 0)
-//                    return 0;
-//                else
-//                    return 1;
-//            });
-//        }
+
         if (!files.isEmpty()) {
             files.sort((f1, f2) -> f1.getUploadTime().before(f2.getUploadTime()) ? 1 : (f1.getUploadTime().equals(f2.getUploadTime()) ? 0 : -1));
         }
@@ -212,26 +205,7 @@ public class FileController {
         Subject subject = SecurityUtils.getSubject();
 
         // 可管理的用户目录，可上传的用户
-
         return userService.getAllUsers();
     }
-
-//    // 视频播放
-//    @RequestMapping(value = "/preview2", method = RequestMethod.GET)
-//    @ResponseBody
-//    public void getPreview2(HttpServletResponse response) {
-//        try {
-//            File file = new File("D:/a.mp4");
-//            response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-//            response.setHeader("Content-Disposition", "attachment; filename=" + file.getName().replace(" ", "_"));
-//            InputStream iStream = new FileInputStream(file);
-//            IOUtils.copy(iStream, response.getOutputStream());
-//            response.flushBuffer();
-//        } catch (java.nio.file.NoSuchFileException e) {
-//            response.setStatus(HttpStatus.NOT_FOUND.value());
-//        } catch (Exception e) {
-//            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//        }
-//    }
 
 }

@@ -30,7 +30,6 @@ public class UserRealm extends AuthorizingRealm {
         // 设置当前用户角色
         info.setRoles(new HashSet<>(Arrays.asList(currentUser.getRole().split(","))));
 
-        //todo 设置当前用户权限
 
         return info;
     }
